@@ -1,4 +1,4 @@
-from bottle import route, run, static_file, request
+from bottle import route, run, static_file, request, abort
 from pathlib import Path
 import sqlite3
 
@@ -7,14 +7,24 @@ import sqlite3
 # also ... http://localhost in die Adresszeile eingibt.
 @route("/")
 def index():
+    # Prüfen, ob eine Suche angefordert wurde, oder ob alle Pizzen angezeigt werden sollen
+    if request.query.search != "":
+        where_clause = " WHERE pizza.name LIKE '%" + request.query.search + "%'"
+    else:
+        where_clause = "";
+    
     # lese Template-Datei für die Speisekarte ein
     template = Path("menu_template.html").read_text(encoding = "utf-8")
     
     db_connection = create_db_connection()
     cursor = db_connection.cursor()
-    sql_statement = "SELECT pizza.name, pizza.ingredients, diet.name, pizza.cost, pizza.id FROM pizza LEFT JOIN diet ON pizza.'diet-id' = diet.id;"
-    cursor.execute(sql_statement)
+    sql_statement = "SELECT pizza.name, pizza.ingredients, diet.name, pizza.cost, pizza.id FROM pizza LEFT JOIN diet ON pizza.'diet-id' = diet.id" + where_clause + ""
+    
+    #cursor.execute(sql_statement)
+    dbms_execute(cursor, db_connection, sql_statement)
+    
     results = cursor.fetchall()
+    
     
     tabelle = "" # in dieser Variablen bauen wir das HTML für unsere Tabelle auf
     for pizza in results:
@@ -94,7 +104,24 @@ def format_cost(cost):
         nach_komma = str(nach_komma) + "0"
         
     return str(vor_komma) + "," + str(nach_komma) + " €"
+
+
+# Diese Methode simuliert das Verhalten anderer DBMS (SQLite kann nicht mehrere Befehle in einem execute() ausführen!)
+def dbms_execute(cursor, dbcon, sql):
+    print("\n" + sql + "\n")
+    cursor.executescript(sql)
+    dbcon.commit()
     
+    # cleanup query (remove all but first SQL statement)
+    # sql = sql.split(";", 1)[0]
+    
+    # bei einer SQL Injection mit mehreren Befehlen wird hier ein Fehler auftreten:
+    try:
+        cursor.execute(sql)
+    except:
+        abort(500)
+        
+
 
 
 run(host = "localhost", port = 80)
