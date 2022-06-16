@@ -9,7 +9,7 @@ Eine Demo-Webanwendung mit Python (Bottle) und Datenbank (SQLite). Es handelt si
 
 Entwickelt für den Informatik-Grundkurs der Unterrichtsstufe Q2 an der [St. Ursula-Schule Geisenheim](https://st-ursula-schule.de/).
 
-Dieses Projekt ist die Neuauflage von [https://github.com/digitalvolk/PizzaBellaNonna] auf Python und SQLite. Ziel war es, eine Umgebung zu schaffen, in der Schülerinnen und Schüler ohne Installation und Konfiguration von Web- und Datenbankservern direkt sichtbar Ergebnisse erzielen können. Das Python-Framework [Bottle](https://bottlepy.org/docs/dev/) bringt direkt einen Webserver mit und besteht nur aus einer Datei. [SQLite](https://www.sqlite.org/) als DBMS beschränkt sich ebenfalls auf eine Datei und ist bereits Bestandteil aktueller Python-Installationen ([sqlite3](https://docs.python.org/3/library/sqlite3.html)), ohne dass weitere Software installiert werden muss.
+Dieses Projekt ist die Neuauflage von [https://github.com/digitalvolk/PizzaBellaNonna] mit Python und SQLite. Ziel war es, eine Umgebung zu schaffen, in der Schülerinnen und Schüler ohne Installation und Konfiguration von Web- und Datenbankservern direkt sichtbar Ergebnisse erzielen können. Das Python-Framework [Bottle](https://bottlepy.org/docs/dev/) bringt direkt einen Webserver mit und besteht nur aus einer Datei. [SQLite](https://www.sqlite.org/) als DBMS beschränkt sich ebenfalls auf eine Datei und ist bereits Bestandteil aktueller Python-Installationen ([sqlite3](https://docs.python.org/3/library/sqlite3.html)), ohne dass weitere Software installiert werden muss.
 
 
 ## Warning
