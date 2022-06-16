@@ -12,10 +12,10 @@ def index():
     
     db_connection = create_db_connection()
     cursor = db_connection.cursor()
-    sql_statement = "SELECT pizza.name, pizza.ingredients, diet.name, pizza.cost FROM pizza LEFT JOIN diet ON pizza.'diet-id' = diet.id;"
+    sql_statement = "SELECT pizza.name, pizza.ingredients, diet.name, pizza.cost, pizza.id FROM pizza LEFT JOIN diet ON pizza.'diet-id' = diet.id;"
     cursor.execute(sql_statement)
-    
     results = cursor.fetchall()
+    
     tabelle = "" # in dieser Variablen bauen wir das HTML für unsere Tabelle auf
     for pizza in results:
         tabelle = tabelle + "<tr>"
@@ -36,8 +36,8 @@ def index():
         # Der Preis soll "hübsch" formatiert sein (z.B. "8,00 €" statt "8.0")
         tabelle = tabelle + "<td>" + format_cost(pizza[3]) + "</td>"
         
-        # Hier kommt der Link zum Bestellen
-        tabelle = tabelle + "<td><a href=\"order.html?pizza=" + str(pizza[0]) + "&preis=" + str(pizza[3]) + "\">bestellen</a></td>"
+        # Hier kommt der Link zum Bestellen, übertragen wird nur die id der bestellten Pizza
+        tabelle = tabelle + "<td><a href=\"order.html?pizzaid=" + str(pizza[4]) + "\">bestellen</a></td>"
         
         tabelle = tabelle + "</tr>"
     
@@ -49,8 +49,22 @@ def index():
 @route("/order.html")
 def order():
     # Welche Parameter wurden an unsere Webseite übergeben? (Das Zeug hinter dem "?" in der URL.)
-    pizza_name = request.query.pizza
-    pizza_cost = float(request.query.preis)
+    pizza_id = int(request.query.pizzaid)
+    
+    # Daten zur bestellten Pizza aus Datenbank holen
+    db_connection = create_db_connection()
+    cursor = db_connection.cursor()
+    sql_statement = "SELECT name, cost FROM pizza WHERE id = " + str(pizza_id) + ";"
+    cursor.execute(sql_statement)
+    results = cursor.fetchall()
+    
+    if len(results) > 0:
+        pizza_name = results[0][0] # Aus dem ersten Ergebnis wollen wir den ersten Wert -> der Name der Pizza
+        pizza_cost = results[0][1] # Aus dem ersten Ergebnis wollen wir den zweiten Wert -> der Preis
+    else:
+        # Hier sollte eine Fehlerbehandlung stattfinden ;)
+        pizza_name = "zufällige Pizza"
+        pizza_cost = 42
     
     # lese Template-Datei für Bestellungen ein
     template = Path("order_template.html").read_text(encoding = "utf-8")
