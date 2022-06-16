@@ -1,4 +1,4 @@
-from bottle import route, run, static_file
+from bottle import route, run, static_file, request
 from pathlib import Path
 import sqlite3
 
@@ -7,7 +7,7 @@ import sqlite3
 # also ... http://localhost in die Adresszeile eingibt.
 @route("/")
 def index():
-    # lese Template-Datei ein
+    # lese Template-Datei für die Speisekarte ein
     template = Path("menu_template.html").read_text(encoding = "utf-8")
     
     db_connection = create_db_connection()
@@ -35,9 +35,28 @@ def index():
         
         # Der Preis soll "hübsch" formatiert sein (z.B. "8,00 €" statt "8.0")
         tabelle = tabelle + "<td>" + format_cost(pizza[3]) + "</td>"
+        
+        # Hier kommt der Link zum Bestellen
+        tabelle = tabelle + "<td><a href=\"order.html?pizza=" + str(pizza[0]) + "&preis=" + str(pizza[3]) + "\">bestellen</a></td>"
+        
         tabelle = tabelle + "</tr>"
     
     template = template.replace("$TABELLE", tabelle) # ersetze den Platzhalter im HTML durch unsere Tabelle
+    return template
+
+
+# die Bestellseite
+@route("/order.html")
+def order():
+    # Welche Parameter wurden an unsere Webseite übergeben? (Das Zeug hinter dem "?" in der URL.)
+    pizza_name = request.query.pizza
+    pizza_cost = float(request.query.preis)
+    
+    # lese Template-Datei für Bestellungen ein
+    template = Path("order_template.html").read_text(encoding = "utf-8")
+    template = template.replace("$PIZZA", pizza_name)
+    template = template.replace("$PREIS", format_cost(pizza_cost))
+
     return template
 
 
