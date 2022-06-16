@@ -9,19 +9,20 @@ import sqlite3
 def index():
     # Prüfen, ob eine Suche angefordert wurde, oder ob alle Pizzen angezeigt werden sollen
     if request.query.search != "":
-        where_clause = " WHERE pizza.name LIKE '%" + request.query.search + "%'"
+        sql_statement = "SELECT pizza.name, pizza.ingredients, diet.name, pizza.cost, pizza.id FROM pizza LEFT JOIN diet ON pizza.'diet-id' = diet.id WHERE pizza.name LIKE :search;"
+        sql_parameters = {"search": "%" + request.query.search + "%"}
     else:
-        where_clause = "";
+        sql_statement = "SELECT pizza.name, pizza.ingredients, diet.name, pizza.cost, pizza.id FROM pizza LEFT JOIN diet ON pizza.'diet-id' = diet.id;"
+        sql_parameters = {}
     
     # lese Template-Datei für die Speisekarte ein
     template = Path("menu_template.html").read_text(encoding = "utf-8")
     
     db_connection = create_db_connection()
     cursor = db_connection.cursor()
-    sql_statement = "SELECT pizza.name, pizza.ingredients, diet.name, pizza.cost, pizza.id FROM pizza LEFT JOIN diet ON pizza.'diet-id' = diet.id" + where_clause + ""
     
-    #cursor.execute(sql_statement)
-    dbms_execute(cursor, db_connection, sql_statement)
+    cursor.execute(sql_statement, sql_parameters) # Schutz vor SQL Injection durch "parametrisierte Query", d.h. das DBMS escaped alle Eingabezeichen korrekt.
+    #dbms_execute(cursor, db_connection, sql_statement)
     
     results = cursor.fetchall()
     
