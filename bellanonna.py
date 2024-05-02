@@ -40,8 +40,8 @@ def index():
         tabelle = tabelle + "<td>" + format_cost(pizza[3]) + "</td>"
 
         # Hier kommt der Link zum Bestellen, übertragen wird Name und Preis der Pizza
-        #tabelle = tabelle + "<td><a href=\"order.html?pizza=" + str(pizza[0]) + "&preis=" + str(pizza[3]) +  "\">bestellen</a></td>"
-        tabelle = tabelle + "<td><a href=\"order.html?pizza=" + str(pizza[4]) + "\">bestellen</a></td>"
+        tabelle = tabelle + "<td><a href=\"order.html?pizza=" + str(pizza[0]) + "&preis=" + str(pizza[3]) +  "\">bestellen</a></td>"
+        #tabelle = tabelle + "<td><a href=\"order.html?pizza=" + str(pizza[4]) + "\">bestellen</a></td>"
 
         tabelle = tabelle + "</tr>"
 
@@ -121,4 +121,4 @@ def dbms_execute(cursor, dbcon, sql):
         abort(500)
 
 
-run(host="localhost", port=80)
+run(host="localhost", port=81)
